@@ -3,6 +3,7 @@
 #include <utility>
 #include <fstream>
 #include <string>
+#include <unordered_map>
 
 std::pair<std::list<int>, std::list<int> > get_puzzle_input() {
     std::list<int> list1;
@@ -46,6 +47,28 @@ int main() {
     }
 
     std::cout << "Result: " << sum << "\n";
+    std::cout << "Start of Part 2." << "\n";
+
+    std::unordered_map<int,int> list_2_valcounts = {};
+    list1 = listpair.first;
+    list2 = listpair.second;
+    for (auto i = list2.cbegin(); i != list2.cend(); i++) {
+        if (list_2_valcounts.find(*i) != list_2_valcounts.end()) {
+            list_2_valcounts[*i] += 1;
+        } else {
+            list_2_valcounts[*i] = 1;
+        }
+    }
+
+    int sum2 = 0;
+
+    for (auto i = list1.cbegin(); i != list1.cend(); i++) {
+        if (list_2_valcounts.find(*i) != list_2_valcounts.end()) {
+            sum2 += (*i) * list_2_valcounts[*i];
+        }
+    }
+
+    std::cout << "Result for part 2: " << sum2 << std::endl;
 
     return 0;
 }
