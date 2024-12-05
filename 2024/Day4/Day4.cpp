@@ -94,6 +94,40 @@ int count_from_given_x(int x_xloc, int x_yloc, int grid_xsize, int grid_ysize, s
     return sum;
 }
 
+int count_from_given_a(int x_xloc, int x_yloc, int grid_xsize, int grid_ysize, std::vector<std::vector<char> > wordsearch) {
+    int sum = 0;
+
+    if ((x_xloc == 0) or (x_xloc == grid_xsize - 1) or (x_yloc == 0) or (x_yloc == grid_ysize - 1)) { 
+        return 0;
+    }
+
+    // check major diagnoal
+    for (int parity : {-1, 1}) {
+        std::string test = "";
+        for (int i=-1; i<2; i++) {
+            test += wordsearch[x_yloc + (parity * i)][x_xloc + (parity * i)];
+        }
+        if (test == "MAS") {
+            sum += 1;
+            break;
+        }
+    }
+
+    // check minor diagnoal
+    for (int parity : {-1, 1}) {
+        std::string test = "";
+        for (int i=-1; i<2; i++) {
+            test += wordsearch[x_yloc - (parity * i)][x_xloc + (parity * i)];
+        }
+        if (test == "MAS") {
+            sum += 1;
+            break;
+        }
+    }
+
+    return sum;
+}
+
 int part1() {
     const std::pair<size_t, size_t> gridsize = find_wordsearch_size();
     std::vector<std::vector<char> > wordsearch = fetch_data_array(gridsize.first, gridsize.second);
@@ -110,9 +144,27 @@ int part1() {
     return total;
 }
 
+int part2() {
+    const std::pair<size_t, size_t> gridsize = find_wordsearch_size();
+    std::vector<std::vector<char> > wordsearch = fetch_data_array(gridsize.first, gridsize.second);
+
+    int total = 0;
+    for (int i = 0; i < gridsize.first; ++i) {
+        for (int j = 0; j < gridsize.second; ++j) {
+            if (wordsearch[j][i] == 'A') {
+                total += (count_from_given_a(i,j,gridsize.first,gridsize.second,wordsearch) == 2) ? 1 : 0;
+            }
+        }
+    }
+
+    return total;
+}
+
 int main() {
     int part1ans = part1();
-
     std::cout << "Part 1: " << part1ans << std::endl;
+
+    int part2ans = part2();
+    std::cout << "Part 2: " << part2ans << std::endl;
     return 0;
 }
