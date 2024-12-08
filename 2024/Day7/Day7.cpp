@@ -48,7 +48,7 @@ std::vector<int> classic_carryover_adder(std::vector<int> vec1, std::vector<int>
         sum[i] = (vec1[i] + vec2[i]) % 10;
         int overload_thing = std::floor((vec1[i] + vec2[i]) / 10);
         overload[i + 1] = overload_thing;
-        sum[i] += overload[i];
+        vec1[i+1] += overload_thing;
     }
 
     return sum;
