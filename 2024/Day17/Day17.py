@@ -128,8 +128,8 @@ def part1():
         # print(ptr)
         registers,ptr = opcode_to_fun[program[ptr]](registers,program,ptr)
     print("\n")
-    
-def check_if_a_val_works(a_val, registers, program, ptr):
+
+def get_out_on_this_iter(a_val, registers, program, ptr):
     max_ptr = len(program)
     registers['A'] = a_val
     outputs = []
@@ -139,19 +139,25 @@ def check_if_a_val_works(a_val, registers, program, ptr):
         # print(ptr)
         if program[ptr] == 5:
             registers,ptr,output = out2(registers,program,ptr)
-            outputs.append(output)
-            if len(outputs) > len(program):
-                return False
-            elif outputs[-1] != program[len(outputs) - 1]:
-                return False
+            return output
         else:
             registers,ptr = opcode_to_fun[program[ptr]](registers,program,ptr)
 
-    if len(outputs) == len(program):
-        print(outputs)
-        print(program)
-        return True
-    return False
+    return
+
+def find_possible_a_vals_at_round_n(program, n, allowed_vals_from_next):
+    ptr = 0
+    val_we_want = program[n]
+    N = len(program) - n
+    possible_a_vals = [(i*8) + j for i in allowed_vals_from_next for j in range(8)]
+
+    new_possible_a_vals = []
+    registers = {'A':0,'B':0,'C':0}
+    for a_val in possible_a_vals:
+        if (get_out_on_this_iter(a_val, registers, program, 0) == val_we_want):
+            new_possible_a_vals.append(a_val)
+
+    return new_possible_a_vals
 
 
 def part2():
@@ -168,16 +174,21 @@ def part2():
 
     ptr = 0
     registers = {'A':0,'B':0,'C':0}
-    a_val = 0
+
+    start_a_val = ((2**3)) ** (len(program) - 1) - 1
+    a_val = start_a_val
     found = False
-    while (not found):
-        if (a_val % 1000 == 0):
-            print(a_val)
-        a = check_if_a_val_works(a_val,registers,program,ptr)
-        if a:
-            found = True
-            print(a_val)
-        else:
-            a_val += 1
+    possible_starting_a_vals = [i for i in range(1,8)]
+
+    for n in range(len(program)-2, -1, -1):
+        print("-=-=-=-=")
+        print(n)
+        print("number of possible starts: %s" %len(possible_starting_a_vals))
+        possible_starting_a_vals =  find_possible_a_vals_at_round_n(program, n, possible_starting_a_vals)
+
+    print("Part 2 Possible Answers: %s" %possible_starting_a_vals)
+    print("Part 2: %s" %np.min(possible_starting_a_vals))
+
+
 
 part2()
